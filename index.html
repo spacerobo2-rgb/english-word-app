@@ -1,2256 +1,1472 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="ja">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>英単語カメラ暗記</title>
-
-<script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
+<title>英単語暗記</title>
 
 <style>
-*{
-  box-sizing:border-box;
+
+* {
+    box-sizing: border-box;
 }
 
-body{
-  margin:0;
-  font-family:-apple-system,BlinkMacSystemFont,
-    "Hiragino Sans","Yu Gothic",sans-serif;
-  background:#f5f7fb;
-  color:#172033;
+body {
+    margin: 0;
+    font-family:
+        -apple-system,
+        BlinkMacSystemFont,
+        "Hiragino Sans",
+        "Yu Gothic",
+        sans-serif;
+
+    background: #f4f6fa;
+    color: #222;
 }
 
-header{
-  background:#fff;
-  padding:18px 16px 12px;
-  border-bottom:1px solid #e4e8ef;
-  position:sticky;
-  top:0;
-  z-index:5;
+/* =========================
+   ヘッダー
+========================= */
+
+header {
+    background: white;
+    padding: 18px;
+    text-align: center;
+    border-bottom: 1px solid #ddd;
 }
 
-h1{
-  font-size:21px;
-  margin:0 0 5px;
+header h1 {
+    margin: 0;
+    font-size: 22px;
 }
 
-.sub{
-  font-size:12px;
-  color:#6b7280;
+header p {
+    margin: 6px 0 0;
+    color: #777;
+    font-size: 13px;
 }
 
-main{
-  max-width:760px;
-  margin:auto;
-  padding:14px;
+
+/* =========================
+   全体
+========================= */
+
+.container {
+    max-width: 700px;
+    margin: auto;
+    padding: 15px;
 }
 
-.card{
-  background:#fff;
-  border-radius:16px;
-  padding:16px;
-  margin-bottom:14px;
-  box-shadow:0 2px 10px #0000000b;
+
+/* =========================
+   カード
+========================= */
+
+.box {
+    background: white;
+    border-radius: 16px;
+    padding: 18px;
+    margin-bottom: 15px;
+
+    box-shadow:
+        0 2px 8px rgba(0,0,0,0.06);
 }
 
-h2{
-  font-size:17px;
-  margin:0 0 12px;
+.box h2 {
+    font-size: 17px;
+    margin-top: 0;
 }
 
-button,
-input,
-select{
-  font:inherit;
+
+/* =========================
+   ボタン
+========================= */
+
+button {
+    border: none;
+    border-radius: 10px;
+
+    padding: 11px 15px;
+
+    font-size: 14px;
+    font-weight: bold;
+
+    cursor: pointer;
+
+    background: #3478f6;
+    color: white;
 }
 
-button{
-  border:0;
-  border-radius:11px;
-  padding:11px 14px;
-  background:#315efb;
-  color:#fff;
-  font-weight:700;
+button:hover {
+    opacity: 0.85;
 }
 
-button.secondary{
-  background:#eef2f7;
-  color:#253047;
+button.gray {
+    background: #e9edf3;
+    color: #333;
 }
 
-button.danger{
-  background:#fff0f0;
-  color:#b42318;
+button.red {
+    background: #ffe5e5;
+    color: #c62828;
 }
 
-button:disabled{
-  opacity:.5;
+button.active {
+    background: #172033;
 }
 
-input[type=file]{
-  width:100%;
-  padding:12px;
-  background:#f3f5f8;
-  border-radius:10px;
+
+/* =========================
+   ボタン横並び
+========================= */
+
+.buttons {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
 }
 
-.row{
-  display:flex;
-  gap:8px;
-  flex-wrap:wrap;
-  align-items:center;
+
+/* =========================
+   読み込み状態
+========================= */
+
+.status {
+    margin-top: 10px;
+
+    font-size: 13px;
+
+    color: #666;
+
+    min-height: 20px;
 }
 
-.progress{
-  height:10px;
-  background:#e9edf3;
-  border-radius:99px;
-  overflow:hidden;
-  margin:10px 0;
+
+/* =========================
+   単語カード
+========================= */
+
+.word-card {
+
+    min-height: 300px;
+
+    border: 2px solid #e3e7ee;
+
+    border-radius: 18px;
+
+    display: flex;
+
+    justify-content: center;
+
+    align-items: center;
+
+    text-align: center;
+
+    cursor: pointer;
+
+    padding: 25px;
+
+    user-select: none;
 }
 
-.bar{
-  height:100%;
-  width:0;
-  background:#315efb;
-  transition:.2s;
+.question {
+
+    font-size: 32px;
+
+    font-weight: bold;
+
+    line-height: 1.4;
+
+    word-break: break-word;
 }
 
-.status{
-  font-size:13px;
-  color:#526070;
-  min-height:20px;
+.answer {
+
+    margin-top: 20px;
+
+    font-size: 27px;
+
+    font-weight: bold;
+
+    color: #3478f6;
 }
 
-.preview{
-  width:100%;
-  max-height:420px;
-  object-fit:contain;
-  background:#111;
-  border-radius:12px;
-  display:block;
+.hint {
+
+    margin-top: 25px;
+
+    color: #888;
+
+    font-size: 12px;
 }
 
-.controls label{
-  display:grid;
-  grid-template-columns:65px 1fr 50px;
-  gap:8px;
-  align-items:center;
-  margin:8px 0;
-  font-size:13px;
+
+/* =========================
+   モード
+========================= */
+
+.mode-buttons {
+
+    display: grid;
+
+    grid-template-columns: 1fr 1fr;
+
+    gap: 8px;
+
+    margin-bottom: 10px;
 }
 
-input[type=range]{
-  width:100%;
+
+/* =========================
+   苦手表示
+========================= */
+
+.badge {
+
+    display: inline-block;
+
+    background: #fff1c7;
+
+    color: #765700;
+
+    padding: 5px 9px;
+
+    border-radius: 20px;
+
+    font-size: 12px;
+
+    margin-left: 5px;
 }
 
-.small{
-  font-size:12px;
-  color:#697386;
-  line-height:1.55;
+
+/* =========================
+   単語一覧
+========================= */
+
+.word-list {
+
+    max-height: 400px;
+
+    overflow-y: auto;
+
+    border-top: 1px solid #eee;
 }
 
-.mode{
-  display:grid;
-  grid-template-columns:1fr 1fr;
-  gap:8px;
+.word-row {
+
+    display: grid;
+
+    grid-template-columns:
+        45px
+        1fr
+        1fr
+        45px;
+
+    gap: 8px;
+
+    align-items: center;
+
+    padding: 9px 0;
+
+    border-bottom: 1px solid #eee;
+
+    font-size: 14px;
 }
 
-.mode button.active{
-  background:#172033;
+.word-number {
+
+    color: #888;
+
+    font-size: 12px;
 }
 
-.flash{
-  min-height:260px;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  text-align:center;
-  border:2px solid #e3e8f0;
-  border-radius:18px;
-  padding:22px;
-  cursor:pointer;
-  user-select:none;
+
+/* =========================
+   非表示
+========================= */
+
+.hidden {
+    display: none !important;
 }
 
-.flash .q{
-  font-size:30px;
-  font-weight:800;
-  line-height:1.35;
-  word-break:break-word;
+
+/* =========================
+   注意書き
+========================= */
+
+.info {
+
+    background: #eef6ff;
+
+    border: 1px solid #cfe1ff;
+
+    border-radius: 10px;
+
+    padding: 11px;
+
+    font-size: 13px;
+
+    line-height: 1.6;
 }
 
-.flash .a{
-  font-size:25px;
-  margin-top:20px;
-  color:#315efb;
-  font-weight:700;
-}
-
-.badge{
-  display:inline-block;
-  padding:4px 8px;
-  border-radius:99px;
-  background:#fff2cc;
-  color:#7a5700;
-  font-size:12px;
-}
-
-.wordlist{
-  max-height:420px;
-  overflow:auto;
-}
-
-.word{
-  display:grid;
-  grid-template-columns:42px 1fr 1fr 50px;
-  gap:7px;
-  align-items:center;
-  border-bottom:1px solid #edf0f4;
-  padding:8px 0;
-  font-size:14px;
-}
-
-.word input{
-  width:100%;
-  border:1px solid #d9dee8;
-  border-radius:7px;
-  padding:6px;
-}
-
-.word .num{
-  color:#7b8494;
-  font-size:12px;
-}
-
-.word button{
-  padding:6px 8px;
-  font-size:12px;
-  background:#eef2f7;
-  color:#253047;
-}
-
-.hidden{
-  display:none!important;
-}
-
-.notice{
-  background:#eef6ff;
-  border:1px solid #cfe1ff;
-  border-radius:12px;
-  padding:11px;
-  font-size:13px;
-  line-height:1.55;
-}
 </style>
+
 </head>
+
 
 <body>
 
+
 <header>
-  <h1>📷 英単語カメラ暗記</h1>
-  <div class="sub">
-    写真の表を読み取り、英単語カードにします
-  </div>
+
+    <h1>📚 英単語暗記</h1>
+
+    <p>
+        CSVの単語データを読み込んで学習します
+    </p>
+
 </header>
 
-<main>
 
-<!-- 写真読み込み -->
-<section class="card">
 
-  <h2>① 写真を読み込む</h2>
+<div class="container">
 
-  <input
-    id="photo"
-    type="file"
-    accept="image/*"
-    capture="environment"
-  >
 
-  <div style="height:10px"></div>
+<!-- =========================
+     データ読み込み
+========================= -->
 
-  <img
-    id="preview"
-    class="preview hidden"
-  >
+<section class="box">
 
-  <div id="cropBox" class="controls hidden">
+    <h2>📂 単語データ</h2>
+
+    <div class="info">
+
+        このアプリは、同じフォルダにある
+        <strong>words.csv</strong>
+        を自動的に読み込みます。
+
+    </div>
 
     <div
-      class="small"
-      style="margin-top:10px"
+        id="status"
+        class="status"
     >
-      表の上下を調整できます。
-      写真が表だけなら、基本はそのままでOK。
+        単語データを読み込んでいます…
     </div>
 
-    <label>
-      上
-      <input
-        id="top"
-        type="range"
-        min="0"
-        max="40"
-        value="14"
-      >
-      <span id="topv">14%</span>
-    </label>
+</section>
 
-    <label>
-      下
-      <input
-        id="bottom"
-        type="range"
-        min="60"
-        max="100"
-        value="87"
-      >
-      <span id="bottomv">87%</span>
-    </label>
 
-    <label>
-      左
-      <input
-        id="left"
-        type="range"
-        min="0"
-        max="20"
-        value="0"
-      >
-      <span id="leftv">0%</span>
-    </label>
 
-    <label>
-      右
-      <input
-        id="right"
-        type="range"
-        min="80"
-        max="100"
-        value="100"
-      >
-      <span id="rightv">100%</span>
-    </label>
+<!-- =========================
+     暗記モード
+========================= -->
 
-    <div class="small">
-      このアプリは「3つの表が横に並ぶタイプ」を想定して、
-      各表を日本語欄・英語欄に分けてOCRします。
+<section
+    id="studyBox"
+    class="box hidden"
+>
+
+    <h2>🧠 暗記モード</h2>
+
+
+    <!-- 日本語→英語 / 英語→日本語 -->
+
+    <div class="mode-buttons">
+
+        <button
+            id="jpToEn"
+            class="active"
+        >
+            日本語 → 英語
+        </button>
+
+
+        <button
+            id="enToJp"
+            class="gray"
+        >
+            英語 → 日本語
+        </button>
+
     </div>
 
-  </div>
 
-  <div class="row" style="margin-top:10px">
+    <!-- 出題範囲 -->
 
-    <button id="ocrBtn" disabled>
-      🔍 高精度で読み取る
-    </button>
+    <div class="buttons">
 
-    <button
-      id="resetCrop"
-      class="secondary hidden"
-    >
-      範囲を初期値に戻す
-    </button>
+        <button
+            id="allMode"
+            class="gray"
+        >
+            全部から出題
+        </button>
 
-  </div>
 
-  <div class="progress">
+        <button
+            id="weakMode"
+            class="gray"
+        >
+            苦手だけ
+        </button>
+
+
+        <span
+            id="count"
+            class="badge"
+        >
+            0語
+        </span>
+
+    </div>
+
+
+    <div style="height:12px"></div>
+
+
+    <!-- 単語カード -->
+
     <div
-      id="bar"
-      class="bar"
-    ></div>
-  </div>
-
-  <div
-    id="status"
-    class="status"
-  ></div>
-
-</section>
-
-
-<!-- OCR結果編集 -->
-<section
-  id="editSection"
-  class="card hidden"
->
-
-  <h2>② 読み取り結果を確認</h2>
-
-  <div class="notice">
-    OCRは完璧ではないので、間違っている単語だけ直してください。
-    保存すると次回から写真なしで使えます。
-  </div>
-
-  <div
-    id="wordList"
-    class="wordlist"
-    style="margin-top:10px"
-  ></div>
-
-  <div
-    class="row"
-    style="margin-top:12px"
-  >
-
-    <button id="saveBtn">
-      💾 保存して暗記を始める
-    </button>
-
-    <button
-      id="retryBtn"
-      class="secondary"
+        id="wordCard"
+        class="word-card"
     >
-      📷 もう一度読み取る
-    </button>
 
-  </div>
+        <div>
 
-</section>
+            <div
+                id="question"
+                class="question"
+            >
+                準備中…
+            </div>
 
 
-<!-- 暗記 -->
-<section
-  id="studySection"
-  class="card hidden"
->
+            <div
+                id="answer"
+                class="answer hidden"
+            >
+            </div>
 
-  <h2>③ 暗記</h2>
 
-  <div class="mode">
+            <div class="hint">
 
-    <button
-      id="jpMode"
-      class="active"
-    >
-      日本語 → 英語
-    </button>
+                タップすると答えが表示されます<br>
 
-    <button
-      id="enMode"
-      class="secondary"
-    >
-      英語 → 日本語
-    </button>
+                もう一度タップすると次の問題です
 
-  </div>
+            </div>
 
-  <div
-    class="row"
-    style="margin:12px 0"
-  >
-
-    <button
-      id="allBtn"
-      class="secondary"
-    >
-      全部から出題
-    </button>
-
-    <button
-      id="weakBtn"
-      class="secondary"
-    >
-      苦手だけ
-    </button>
-
-    <span
-      id="countBadge"
-      class="badge"
-    ></span>
-
-  </div>
-
-  <div
-    id="flash"
-    class="flash"
-  >
-
-    <div>
-
-      <div
-        class="q"
-        id="question"
-      >
-        準備OK
-      </div>
-
-      <div
-        id="answer"
-        class="a hidden"
-      ></div>
-
-      <div
-        class="small"
-        style="margin-top:22px"
-      >
-        タップで答え
-        → もう一度タップで次へ
-      </div>
+        </div>
 
     </div>
 
-  </div>
 
-  <div
-    class="row"
-    style="margin-top:10px"
-  >
+    <div style="height:10px"></div>
 
-    <button
-      id="weakToggle"
-      class="secondary"
-    >
-      ☆ 苦手にする
-    </button>
 
-    <button
-      id="speakBtn"
-      class="secondary"
-    >
-      🔊 英語を読む
-    </button>
+    <!-- カード操作 -->
 
-  </div>
+    <div class="buttons">
+
+        <button
+            id="weakButton"
+            class="gray"
+        >
+            ☆ 苦手にする
+        </button>
+
+
+        <button
+            id="speakButton"
+            class="gray"
+        >
+            🔊 英語を読む
+        </button>
+
+    </div>
 
 </section>
 
 
-<!-- 保存単語一覧 -->
+
+<!-- =========================
+     単語一覧
+========================= -->
+
 <section
-  id="listSection"
-  class="card hidden"
+    id="listBox"
+    class="box hidden"
 >
 
-  <h2>単語一覧</h2>
+    <h2>
+        📖 単語一覧
+    </h2>
 
-  <div class="row">
 
-    <button
-      id="clearBtn"
-      class="danger"
+    <div
+        id="wordList"
+        class="word-list"
     >
-      全部削除
-    </button>
-
-  </div>
-
-  <div
-    id="savedList"
-    class="wordlist"
-    style="margin-top:10px"
-  ></div>
+    </div>
 
 </section>
 
-</main>
+
+
+</div>
+
 
 
 <script>
 
-const $ = id => document.getElementById(id);
+/* =========================================================
+   基本設定
+========================================================= */
 
-let imageFile = null;
+const CSV_FILE = "words.csv";
 
-let pairs = [];
+const STORAGE_KEY =
+    "english_word_weak_words_v1";
 
-let current = null;
 
-let revealed = false;
+/* =========================================================
+   データ
+========================================================= */
+
+let words = [];
+
+let currentWord = null;
+
+let showingAnswer = false;
 
 let direction = "jp";
 
-let poolMode = "all";
+let questionMode = "all";
 
-const savedKey = "englishWordPairsV3";
 
+/* =========================================================
+   HTML要素
+========================================================= */
 
+const statusElement =
+    document.getElementById("status");
 
-/* =========================
-   範囲表示
-========================= */
+const studyBox =
+    document.getElementById("studyBox");
 
-function updateCropLabels(){
+const listBox =
+    document.getElementById("listBox");
 
-  ["top","bottom","left","right"].forEach(k=>{
+const wordCard =
+    document.getElementById("wordCard");
 
-    $(k+"v").textContent =
-      $(k).value + "%";
+const questionElement =
+    document.getElementById("question");
 
-  });
+const answerElement =
+    document.getElementById("answer");
 
-}
+const countElement =
+    document.getElementById("count");
 
+const weakButton =
+    document.getElementById("weakButton");
 
-["top","bottom","left","right"]
-.forEach(k=>{
 
-  $(k).addEventListener(
-    "input",
-    updateCropLabels
-  );
+/* =========================================================
+   CSVを読み込む
+========================================================= */
 
-});
+async function loadCSV() {
 
+    try {
 
-updateCropLabels();
+        statusElement.textContent =
+            "words.csvを読み込んでいます…";
 
 
+        const response =
+            await fetch(CSV_FILE);
 
-/* =========================
-   写真選択
-========================= */
 
-$("photo").addEventListener(
-  "change",
-  e=>{
+        if (!response.ok) {
 
-    const f = e.target.files?.[0];
-
-    if(!f) return;
-
-    imageFile = f;
-
-    $("preview").src =
-      URL.createObjectURL(f);
-
-    $("preview")
-      .classList
-      .remove("hidden");
-
-    $("cropBox")
-      .classList
-      .remove("hidden");
-
-    $("resetCrop")
-      .classList
-      .remove("hidden");
-
-    $("ocrBtn").disabled = false;
-
-    $("status").textContent =
-      "写真を読み込みました。表が画面いっぱいになるように撮ると、さらに精度が上がります。";
-
-  }
-);
-
-
-
-/* =========================
-   範囲リセット
-========================= */
-
-$("resetCrop").onclick = ()=>{
-
-  $("top").value = 14;
-
-  $("bottom").value = 87;
-
-  $("left").value = 0;
-
-  $("right").value = 100;
-
-  updateCropLabels();
-
-};
-
-
-
-/* =========================
-   画像読み込み
-========================= */
-
-function loadImage(file){
-
-  return new Promise(
-    (resolve,reject)=>{
-
-      const im = new Image();
-
-      im.onload = ()=>resolve(im);
-
-      im.onerror = reject;
-
-      im.src =
-        URL.createObjectURL(file);
-
-    }
-  );
-
-}
-
-
-
-/* =========================
-   OCR用画像加工
-========================= */
-
-function makeCropCanvas(
-  img,
-  x0,
-  y0,
-  x1,
-  y1,
-  scale=2.2
-){
-
-  const sx =
-    Math.max(
-      0,
-      Math.floor(
-        img.naturalWidth * x0
-      )
-    );
-
-  const sy =
-    Math.max(
-      0,
-      Math.floor(
-        img.naturalHeight * y0
-      )
-    );
-
-  const sw =
-    Math.min(
-      img.naturalWidth - sx,
-      Math.floor(
-        img.naturalWidth *
-        (x1-x0)
-      )
-    );
-
-  const sh =
-    Math.min(
-      img.naturalHeight - sy,
-      Math.floor(
-        img.naturalHeight *
-        (y1-y0)
-      )
-    );
-
-
-  const c =
-    document.createElement(
-      "canvas"
-    );
-
-
-  c.width =
-    Math.max(
-      1,
-      Math.floor(sw * scale)
-    );
-
-  c.height =
-    Math.max(
-      1,
-      Math.floor(sh * scale)
-    );
-
-
-  const ctx =
-    c.getContext(
-      "2d",
-      {
-        willReadFrequently:true
-      }
-    );
-
-
-  ctx.imageSmoothingEnabled = true;
-
-  ctx.imageSmoothingQuality =
-    "high";
-
-
-  ctx.drawImage(
-    img,
-    sx,
-    sy,
-    sw,
-    sh,
-    0,
-    0,
-    c.width,
-    c.height
-  );
-
-
-  /*
-    グレースケール＋コントラスト補正
-  */
-
-  const d =
-    ctx.getImageData(
-      0,
-      0,
-      c.width,
-      c.height
-    );
-
-  const a = d.data;
-
-
-  for(
-    let i=0;
-    i<a.length;
-    i+=4
-  ){
-
-    const g =
-      0.299*a[i] +
-      0.587*a[i+1] +
-      0.114*a[i+2];
-
-
-    let v =
-      (g-128)*1.32+128;
-
-
-    v =
-      Math.max(
-        0,
-        Math.min(
-          255,
-          v
-        )
-      );
-
-
-    a[i] =
-      v;
-
-    a[i+1] =
-      v;
-
-    a[i+2] =
-      v;
-
-  }
-
-
-  ctx.putImageData(
-    d,
-    0,
-    0
-  );
-
-
-  return c;
-
-}
-
-
-
-/* =========================
-   日本語クリーニング
-========================= */
-
-function cleanJp(s){
-
-  s =
-    (s||"")
-    .replace(
-      /[|_]/g,
-      " "
-    )
-    .replace(
-      /\s+/g,
-      " "
-    )
-    .trim();
-
-
-  s =
-    s.replace(
-      /^[^0-9０-９]*
-      ([0-9０-９]{1,3})\s*/,
-      "$1 "
-    );
-
-
-  s =
-    s.replace(
-      /^[\s\[\](){}.,:;]+|
-      [\s\[\](){}.,:;]+$/g,
-      ""
-    );
-
-
-  return s;
-
-}
-
-
-
-/* =========================
-   英語クリーニング
-========================= */
-
-function cleanEn(s){
-
-  s =
-    (s||"")
-    .replace(
-      /[^A-Za-z'’\-\s]/g,
-      " "
-    )
-    .replace(
-      /\s+/g,
-      " "
-    )
-    .trim();
-
-
-  const words =
-    s.split(/\s+/)
-    .filter(Boolean);
-
-
-  return words
-    .slice(0,5)
-    .join(" ");
-
-}
-
-
-
-/* =========================
-   OCR行取得
-========================= */
-
-function getLines(data){
-
-  if(
-    data?.lines?.length
-  ){
-
-    return data.lines
-
-      .map(
-        l=>({
-
-          text:
-            (l.text||"").trim(),
-
-          y:
-            (l.bbox?.y0||0)
-
-        })
-      )
-
-      .filter(
-        x=>x.text
-      )
-
-      .sort(
-        (a,b)=>a.y-b.y
-      );
-
-  }
-
-
-  return (data?.text||"")
-    .split(/\n/)
-    .map(
-      (text,i)=>({
-        text:text.trim(),
-        y:i
-      })
-    )
-    .filter(
-      x=>x.text
-    );
-
-}
-
-
-
-/* =========================
-   日本語行 → 単語
-========================= */
-
-function rowsFromJp(lines){
-
-  const out = [];
-
-
-  for(
-    const l of lines
-  ){
-
-    const t =
-      cleanJp(l.text);
-
-
-    const m =
-      t.match(
-        /^(\d{1,3})\s+(.+)/
-      );
-
-
-    if(m){
-
-      const n =
-        Number(m[1]);
-
-
-      if(
-        n>=1 &&
-        n<=999
-      ){
-
-        out.push({
-
-          n,
-
-          jp:
-            m[2].trim(),
-
-          y:l.y
-
-        });
-
-      }
-
-    }
-
-  }
-
-
-  return out;
-
-}
-
-
-
-/* =========================
-   英語行
-========================= */
-
-function rowsFromEn(lines){
-
-  const out = [];
-
-
-  for(
-    const l of lines
-  ){
-
-    const t =
-      cleanEn(l.text);
-
-
-    if(!t)
-      continue;
-
-
-    const alpha =
-      (
-        t.match(
-          /[A-Za-z]/g
-        )||[]
-      ).length;
-
-
-    if(alpha>=2){
-
-      out.push({
-
-        en:t,
-
-        y:l.y
-
-      });
-
-    }
-
-  }
-
-
-  return out;
-
-}
-
-
-
-/* =========================
-   日本語と英語を行で対応
-========================= */
-
-function nearestEnglish(
-  jp,
-  enLines,
-  used
-){
-
-  let best = null;
-
-  let bd = 1e9;
-
-
-  for(
-    let i=0;
-    i<enLines.length;
-    i++
-  ){
-
-    if(
-      used.has(i)
-    )
-      continue;
-
-
-    const d =
-      Math.abs(
-        jp.y -
-        enLines[i].y
-      );
-
-
-    if(d<bd){
-
-      bd=d;
-
-      best=i;
-
-    }
-
-  }
-
-
-  if(
-    best!==null
-  ){
-
-    used.add(best);
-
-    return enLines[best].en;
-
-  }
-
-
-  return "";
-
-}
-
-
-
-/* =========================
-   OCR Worker
-========================= */
-
-async function makeWorker(
-  lang,
-  label
-){
-
-  return await Tesseract.createWorker(
-    lang,
-    1,
-    {
-
-      workerPath:
-        "https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/worker.min.js",
-
-      langPath:
-        "https://tessdata.projectnaptha.com/4.0.0",
-
-      corePath:
-        "https://cdn.jsdelivr.net/npm/tesseract.js-core@5",
-
-      logger:m=>{
-
-        if(
-          m.status &&
-          typeof m.progress ===
-          "number"
-        ){
-
-          $("status").textContent =
-            label +
-            "：" +
-            m.status +
-            " " +
-            Math.round(
-              m.progress*100
-            ) +
-            "%";
+            throw new Error(
+                "words.csvが見つかりません"
+            );
 
         }
 
-      }
+
+        const text =
+            await response.text();
+
+
+        words =
+            parseCSV(text);
+
+
+        if (words.length === 0) {
+
+            throw new Error(
+                "単語データがありません"
+            );
+
+        }
+
+
+        /*
+         * 苦手情報を読み込む
+         */
+
+        loadWeakWords();
+
+
+        statusElement.textContent =
+            `${words.length}語を読み込みました！`;
+
+
+        studyBox
+            .classList
+            .remove("hidden");
+
+
+        listBox
+            .classList
+            .remove("hidden");
+
+
+        updateCount();
+
+        showNextQuestion();
+
+        renderWordList();
+
+
+    } catch (error) {
+
+        console.error(error);
+
+
+        statusElement.innerHTML =
+
+            "❌ 単語データを読み込めませんでした。<br>" +
+
+            "GitHubに <strong>words.csv</strong> が入っているか確認してください。";
 
     }
-  );
 
 }
 
 
+/* =========================================================
+   CSV解析
+========================================================= */
 
-/* =========================
-   OCR実行
-========================= */
+function parseCSV(text) {
 
-async function runOCR(){
+    /*
+     * 改行コードを統一
+     */
 
-  if(!imageFile)
-    return;
-
-
-  $("ocrBtn").disabled = true;
-
-  $("bar").style.width =
-    "2%";
+    text =
+        text.replace(/\r\n/g, "\n")
+            .replace(/\r/g, "\n");
 
 
-  $("status").textContent =
-    "写真を補正しています…";
+    const rows = [];
 
+    let row = [];
 
-  try{
+    let cell = "";
 
-    const img =
-      await loadImage(
-        imageFile
-      );
-
-
-    const top =
-      Number(
-        $("top").value
-      ) / 100;
-
-
-    const bottom =
-      Number(
-        $("bottom").value
-      ) / 100;
-
-
-    const left =
-      Number(
-        $("left").value
-      ) / 100;
-
-
-    const right =
-      Number(
-        $("right").value
-      ) / 100;
+    let insideQuotes = false;
 
 
     /*
-      写真を3列に分割
-    */
+     * CSVを1文字ずつ解析
+     *
+     * カンマを含む文章にも対応
+     */
 
-    const totalW =
-      right-left;
+    for (
+        let i = 0;
+        i < text.length;
+        i++
+    ) {
+
+        const char =
+            text[i];
 
 
-    const colW =
-      totalW/3;
+        if (char === '"') {
+
+            if (
+                insideQuotes &&
+                text[i + 1] === '"'
+            ) {
+
+                cell += '"';
+
+                i++;
+
+            } else {
+
+                insideQuotes =
+                    !insideQuotes;
+
+            }
+
+        }
+
+        else if (
+            char === "," &&
+            !insideQuotes
+        ) {
+
+            row.push(cell);
+
+            cell = "";
+
+        }
+
+        else if (
+            char === "\n" &&
+            !insideQuotes
+        ) {
+
+            row.push(cell);
+
+            rows.push(row);
+
+            row = [];
+
+            cell = "";
+
+        }
+
+        else {
+
+            cell += char;
+
+        }
+
+    }
 
 
     /*
-      日本語OCR
-    */
+     * 最後の行
+     */
 
-    const jpWorker =
-      await makeWorker(
-        "jpn",
-        "日本語OCR"
-      );
+    if (
+        cell !== "" ||
+        row.length > 0
+    ) {
+
+        row.push(cell);
+
+        rows.push(row);
+
+    }
 
 
     /*
-      英語OCR
-    */
+     * 1行目は見出し
+     */
 
-    const enWorker =
-      await makeWorker(
-        "eng",
-        "英語OCR"
-      );
+    const dataRows =
+        rows.slice(1);
 
 
     const result = [];
 
 
-    for(
-      let col=0;
-      col<3;
-      col++
-    ){
+    for (
+        let i = 0;
+        i < dataRows.length;
+        i++
+    ) {
 
-      const cx =
-        left +
-        colW*col;
-
-
-      /*
-        日本語側
-      */
-
-      const jpC =
-        makeCropCanvas(
-          img,
-          cx,
-          top,
-          cx+colW*0.54,
-          bottom,
-          2.2
-        );
+        const row =
+            dataRows[i];
 
 
-      /*
-        英語側
-      */
+        if (
+            row.length < 3
+        ) {
 
-      const enC =
-        makeCropCanvas(
-          img,
-          cx+colW*0.50,
-          top,
-          cx+colW,
-          bottom,
-          2.2
-        );
-
-
-      $("status").textContent =
-        `${col+1}/3列目を読み取り中…`;
-
-
-      /*
-        日本語OCR
-      */
-
-      const jr =
-        await jpWorker.recognize(
-          jpC,
-          {
-            rotateAuto:true
-          }
-        );
-
-
-      $("bar").style.width =
-        (15+col*25)+"%";
-
-
-      /*
-        英語OCR
-      */
-
-      const er =
-        await enWorker.recognize(
-          enC,
-          {
-            rotateAuto:true
-          }
-        );
-
-
-      $("bar").style.width =
-        (35+col*25)+"%";
-
-
-      const jrows =
-        rowsFromJp(
-          getLines(
-            jr.data
-          )
-        );
-
-
-      const erows =
-        rowsFromEn(
-          getLines(
-            er.data
-          )
-        );
-
-
-      const used =
-        new Set();
-
-
-      /*
-        同じ高さの日本語と英語を
-        同じ単語としてペアにする
-      */
-
-      for(
-        const j of jrows
-      ){
-
-        const en =
-          nearestEnglish(
-            j,
-            erows,
-            used
-          );
-
-
-        if(
-          j.jp &&
-          en
-        ){
-
-          result.push({
-
-            n:j.n,
-
-            jp:j.jp,
-
-            en:en,
-
-            weak:false
-
-          });
+            continue;
 
         }
 
-      }
+
+        const number =
+            row[0].trim();
+
+
+        const jp =
+            row[1].trim();
+
+
+        const en =
+            row[2].trim();
+
+
+        if (
+            !jp ||
+            !en
+        ) {
+
+            continue;
+
+        }
+
+
+        result.push({
+
+            id:
+                number ||
+                String(i + 1),
+
+            number:
+                number,
+
+            jp:
+                jp,
+
+            en:
+                en,
+
+            weak:
+                false
+
+        });
 
     }
 
 
-    await jpWorker.terminate();
-
-    await enWorker.terminate();
-
-
-    /*
-      OCRの重複を削除
-    */
-
-    const seen =
-      new Set();
-
-
-    pairs =
-      result
-
-      .filter(x=>{
-
-        const key =
-          x.n +
-          "|" +
-          x.en.toLowerCase();
-
-
-        if(
-          seen.has(key)
-        )
-          return false;
-
-
-        seen.add(key);
-
-        return true;
-
-      })
-
-      .sort(
-        (a,b)=>
-          a.n-b.n
-      );
-
-
-    if(
-      pairs.length < 3
-    ){
-
-      throw new Error(
-        "単語を十分に読み取れませんでした。表の範囲を調整してもう一度試してください。"
-      );
-
-    }
-
-
-    /*
-      編集画面表示
-    */
-
-    renderEditor(
-      pairs
-    );
-
-
-    $("bar").style.width =
-      "100%";
-
-
-    $("status").textContent =
-      `完了！ ${pairs.length}語を読み取りました。`;
-
-  }
-  catch(e){
-
-    console.error(e);
-
-
-    $("status").textContent =
-      "読み取りに失敗しました：" +
-      (e.message||e);
-
-
-    alert(
-      "OCRに失敗しました。表の上下を調整して、もう一度試してください。"
-    );
-
-  }
-  finally{
-
-    $("ocrBtn").disabled =
-      false;
-
-  }
+    return result;
 
 }
 
 
+/* =========================================================
+   苦手データ保存
+========================================================= */
 
-$("ocrBtn").onclick =
-  runOCR;
+function loadWeakWords() {
 
+    try {
 
-
-/* =========================
-   OCR結果編集
-========================= */
-
-function renderEditor(list){
-
-  pairs=list;
-
-
-  $("editSection")
-    .classList
-    .remove("hidden");
+        const saved =
+            JSON.parse(
+                localStorage.getItem(
+                    STORAGE_KEY
+                ) || "[]"
+            );
 
 
-  $("wordList").innerHTML="";
+        words.forEach(word => {
 
+            word.weak =
+                saved.includes(
+                    word.id
+                );
 
-  for(
-    const [i,w]
-    of pairs.entries()
-  ){
+        });
 
-    const div =
-      document.createElement(
-        "div"
-      );
+    }
 
+    catch {
 
-    div.className =
-      "word";
-
-
-    div.innerHTML = `
-
-      <div class="num">
-        ${w.n||i+1}
-      </div>
-
-      <input
-        data-i="${i}"
-        data-k="jp"
-        value="${esc(w.jp)}"
-      >
-
-      <input
-        data-i="${i}"
-        data-k="en"
-        value="${esc(w.en)}"
-      >
-
-      <button
-        data-i="${i}"
-        class="speakOne"
-      >
-        🔊
-      </button>
-
-    `;
-
-
-    $("wordList")
-      .appendChild(div);
-
-  }
-
-
-  /*
-    編集欄
-  */
-
-  $("wordList")
-    .querySelectorAll("input")
-    .forEach(
-      inp=>{
-
-        inp.addEventListener(
-          "input",
-          e=>{
-
-            pairs[
-              Number(
-                e.target.dataset.i
-              )
-            ][
-              e.target.dataset.k
-            ] =
-              e.target.value;
-
-          }
+        console.log(
+            "苦手データなし"
         );
 
-      }
-    );
+    }
+
+}
 
 
-  /*
-    読み上げ
-  */
+/* =========================================================
+   苦手データ保存
+========================================================= */
 
-  $("wordList")
-    .querySelectorAll(
-      ".speakOne"
-    )
-    .forEach(
-      b=>{
+function saveWeakWords() {
 
-        b.onclick=()=>{
-
-          const w =
-            pairs[
-              Number(
-                b.dataset.i
-              )
-            ];
+    const weakIds =
+        words
+            .filter(word => word.weak)
+            .map(word => word.id);
 
 
-          speak(
-            w.en
-          );
-
-        };
-
-      }
+    localStorage.setItem(
+        STORAGE_KEY,
+        JSON.stringify(
+            weakIds
+        )
     );
 
 }
 
 
+/* =========================================================
+   出題対象
+========================================================= */
 
-/* =========================
-   HTMLエスケープ
-========================= */
+function getQuestionPool() {
 
-function esc(s){
+    if (
+        questionMode === "weak"
+    ) {
 
-  return String(
-    s||""
-  )
+        const weakWords =
+            words.filter(
+                word => word.weak
+            );
 
-  .replace(
-    /&/g,
-    "&amp;"
-  )
 
-  .replace(
-    /</g,
-    "&lt;"
-  )
+        /*
+         * 苦手が0個なら
+         * 全部から出す
+         */
 
-  .replace(
-    /"/g,
-    "&quot;"
-  );
+        if (
+            weakWords.length === 0
+        ) {
 
-}
+            alert(
+                "苦手に登録された単語がありません。"
+            );
 
 
+            questionMode = "all";
 
-/* =========================
-   保存
-========================= */
+            return words;
 
-$("saveBtn").onclick = ()=>{
+        }
 
-  localStorage.setItem(
-    savedKey,
-    JSON.stringify(
-      pairs
-    )
-  );
 
-
-  loadSaved();
-
-
-  $("studySection")
-    .classList
-    .remove("hidden");
-
-
-  $("listSection")
-    .classList
-    .remove("hidden");
-
-
-  startNext();
-
-
-  window.scrollTo({
-
-    top:
-      $("studySection")
-      .offsetTop-70,
-
-    behavior:"smooth"
-
-  });
-
-};
-
-
-
-/* =========================
-   再撮影
-========================= */
-
-$("retryBtn").onclick = ()=>{
-
-  window.scrollTo({
-
-    top:0,
-
-    behavior:"smooth"
-
-  });
-
-};
-
-
-
-/* =========================
-   保存データ読み込み
-========================= */
-
-function loadSaved(){
-
-  try{
-
-    pairs =
-      JSON.parse(
-        localStorage.getItem(
-          savedKey
-        )||"[]"
-      );
-
-  }
-  catch{
-
-    pairs=[];
-
-  }
-
-
-  if(
-    !pairs.length
-  )
-    return;
-
-
-  $("studySection")
-    .classList
-    .remove("hidden");
-
-
-  $("listSection")
-    .classList
-    .remove("hidden");
-
-
-  renderSavedList();
-
-  updateBadge();
-
-}
-
-
-
-/* =========================
-   保存単語一覧
-========================= */
-
-function renderSavedList(){
-
-  $("savedList")
-    .innerHTML="";
-
-
-  pairs.forEach(
-    (w,i)=>{
-
-      const div =
-        document.createElement(
-          "div"
-        );
-
-
-      div.className =
-        "word";
-
-
-      div.innerHTML = `
-
-        <div class="num">
-          ${w.n||i+1}
-        </div>
-
-        <div>
-          ${esc(w.jp)}
-        </div>
-
-        <div>
-          ${esc(w.en)}
-        </div>
-
-        <button
-          data-i="${i}"
-          class="speakOne"
-        >
-          🔊
-        </button>
-
-      `;
-
-
-      $("savedList")
-        .appendChild(div);
+        return weakWords;
 
     }
-  );
 
 
-  $("savedList")
-    .querySelectorAll(
-      ".speakOne"
-    )
-    .forEach(
-      b=>{
-
-        b.onclick=()=>{
-
-          speak(
-            pairs[
-              Number(
-                b.dataset.i
-              )
-            ].en
-          );
-
-        };
-
-      }
-    );
+    return words;
 
 }
 
 
-
-/* =========================
-   英語読み上げ
-========================= */
-
-function speak(text){
-
-  if(!text)
-    return;
-
-
-  speechSynthesis.cancel();
-
-
-  const u =
-    new SpeechSynthesisUtterance(
-      text
-    );
-
-
-  u.lang =
-    "en-US";
-
-
-  u.rate =
-    .82;
-
-
-  speechSynthesis.speak(u);
-
-}
-
-
-
-/* =========================
-   苦手数表示
-========================= */
-
-function updateBadge(){
-
-  const weak =
-    pairs.filter(
-      x=>x.weak
-    ).length;
-
-
-  $("countBadge").textContent =
-    `全${pairs.length}語・苦手${weak}語`;
-
-}
-
-
-
-/* =========================
-   出題プール
-========================= */
-
-function choosePool(){
-
-  let p =
-    poolMode==="weak"
-      ? pairs.filter(
-          x=>x.weak
-        )
-      : pairs.slice();
-
-
-  if(
-    !p.length
-  ){
-
-    poolMode="all";
-
-    p=pairs.slice();
-
-
-    alert(
-      "苦手登録された単語がありません。全部から出題します。"
-    );
-
-  }
-
-
-  return p;
-
-}
-
-
-
-/* =========================
+/* =========================================================
    次の問題
-========================= */
+========================================================= */
 
-function startNext(){
+function showNextQuestion() {
 
-  const p =
-    choosePool();
-
-
-  if(
-    !p.length
-  )
-    return;
+    const pool =
+        getQuestionPool();
 
 
-  current =
-    p[
-      Math.floor(
-        Math.random()*
-        p.length
-      )
-    ];
+    if (
+        pool.length === 0
+    ) {
+
+        questionElement.textContent =
+            "単語がありません";
+
+        return;
+
+    }
 
 
-  revealed=false;
+    /*
+     * ランダム
+     */
+
+    const index =
+        Math.floor(
+            Math.random() *
+            pool.length
+        );
 
 
-  $("answer")
-    .classList
-    .add("hidden");
+    currentWord =
+        pool[index];
 
 
-  $("answer").textContent =
-    direction==="jp"
-      ? current.en
-      : current.jp;
+    showingAnswer =
+        false;
 
 
-  $("question").textContent =
-    direction==="jp"
-      ? current.jp
-      : current.en;
+    answerElement
+        .classList
+        .add("hidden");
 
 
-  /*
-    英語→日本語では
-    問題を出した瞬間に英語を読む
-  */
+    /*
+     * 日本語→英語
+     */
 
-  if(
-    direction==="en"
-  ){
+    if (
+        direction === "jp"
+    ) {
 
-    speak(
-      current.en
-    );
+        questionElement.textContent =
+            currentWord.jp;
 
-  }
+    }
 
 
-  $("weakToggle").textContent =
-    current.weak
-      ? "★ 苦手を外す"
-      : "☆ 苦手にする";
+    /*
+     * 英語→日本語
+     */
+
+    else {
+
+        questionElement.textContent =
+            currentWord.en;
 
 
-  updateBadge();
+        /*
+         * 英語を表示した瞬間に読み上げ
+         */
+
+        speakEnglish(
+            currentWord.en
+        );
+
+    }
+
+
+    updateWeakButton();
 
 }
 
 
+/* =========================================================
+   答えを表示
+========================================================= */
 
-/* =========================
-   カードタップ
-========================= */
+function showAnswer() {
 
-$("flash").onclick = ()=>{
-
-  if(!current)
-    return;
-
-
-  if(!revealed){
-
-    revealed=true;
+    if (!currentWord) {
+        return;
+    }
 
 
-    $("answer")
-      .classList
-      .remove("hidden");
+    if (
+        showingAnswer === false
+    ) {
+
+        showingAnswer = true;
 
 
-    /*
-      日本語→英語なら
-      答えを出したときに英語を読む
-    */
+        if (
+            direction === "jp"
+        ) {
 
-    if(
-      direction==="jp"
-    ){
+            answerElement.textContent =
+                currentWord.en;
 
-      speak(
-        current.en
-      );
+
+            speakEnglish(
+                currentWord.en
+            );
+
+        }
+
+        else {
+
+            answerElement.textContent =
+                currentWord.jp;
+
+        }
+
+
+        answerElement
+            .classList
+            .remove("hidden");
 
     }
 
-  }
-  else{
+    else {
 
-    startNext();
+        showNextQuestion();
 
-  }
+    }
 
-};
-
+}
 
 
-/* =========================
+/* =========================================================
+   カードタップ
+========================================================= */
+
+wordCard.onclick =
+    showAnswer;
+
+
+/* =========================================================
    日本語→英語
-========================= */
+========================================================= */
 
-$("jpMode").onclick = ()=>{
+document
+    .getElementById("jpToEn")
+    .onclick = function() {
 
-  direction="jp";
-
-
-  $("jpMode")
-    .classList
-    .add("active");
+        direction = "jp";
 
 
-  $("enMode")
-    .classList
-    .remove("active");
+        this.classList
+            .add("active");
+
+        this.classList
+            .remove("gray");
 
 
-  startNext();
+        const other =
+            document
+                .getElementById(
+                    "enToJp"
+                );
 
-};
+
+        other.classList
+            .remove("active");
+
+        other.classList
+            .add("gray");
 
 
+        showNextQuestion();
 
-/* =========================
+    };
+
+
+/* =========================================================
    英語→日本語
-========================= */
+========================================================= */
 
-$("enMode").onclick = ()=>{
+document
+    .getElementById("enToJp")
+    .onclick = function() {
 
-  direction="en";
-
-
-  $("enMode")
-    .classList
-    .add("active");
+        direction = "en";
 
 
-  $("jpMode")
-    .classList
-    .remove("active");
+        this.classList
+            .add("active");
+
+        this.classList
+            .remove("gray");
 
 
-  startNext();
+        const other =
+            document
+                .getElementById(
+                    "jpToEn"
+                );
 
-};
+
+        other.classList
+            .remove("active");
+
+        other.classList
+            .add("gray");
 
 
+        showNextQuestion();
 
-/* =========================
+    };
+
+
+/* =========================================================
    全部から出題
-========================= */
+========================================================= */
 
-$("allBtn").onclick = ()=>{
+document
+    .getElementById("allMode")
+    .onclick = function() {
 
-  poolMode="all";
+        questionMode = "all";
 
-  startNext();
-
-};
-
+        this.classList
+            .add("active");
 
 
-/* =========================
+        document
+            .getElementById(
+                "weakMode"
+            )
+            .classList
+            .remove("active");
+
+
+        showNextQuestion();
+
+    };
+
+
+/* =========================================================
    苦手だけ
-========================= */
+========================================================= */
 
-$("weakBtn").onclick = ()=>{
+document
+    .getElementById("weakMode")
+    .onclick = function() {
 
-  poolMode="weak";
+        questionMode = "weak";
 
-  startNext();
-
-};
-
-
-
-/* =========================
-   苦手登録
-========================= */
-
-$("weakToggle").onclick = ()=>{
-
-  if(!current)
-    return;
+        this.classList
+            .add("active");
 
 
-  current.weak =
-    !current.weak;
+        document
+            .getElementById(
+                "allMode"
+            )
+            .classList
+            .remove("active");
 
 
-  localStorage.setItem(
-    savedKey,
-    JSON.stringify(
-      pairs
-    )
-  );
+        showNextQuestion();
+
+    };
 
 
-  $("weakToggle").textContent =
-    current.weak
-      ? "★ 苦手を外す"
-      : "☆ 苦手にする";
+/* =========================================================
+   苦手ボタン
+========================================================= */
+
+weakButton.onclick =
+    function(event) {
+
+        event.stopPropagation();
 
 
-  updateBadge();
-
-  renderSavedList();
-
-};
+        if (!currentWord) {
+            return;
+        }
 
 
+        currentWord.weak =
+            !currentWord.weak;
 
-/* =========================
-   英語を読む
-========================= */
 
-$("speakBtn").onclick = ()=>{
+        saveWeakWords();
 
-  if(current){
+        updateWeakButton();
 
-    speak(
-      current.en
+        updateCount();
+
+        renderWordList();
+
+    };
+
+
+/* =========================================================
+   苦手ボタン表示
+========================================================= */
+
+function updateWeakButton() {
+
+    if (!currentWord) {
+        return;
+    }
+
+
+    if (
+        currentWord.weak
+    ) {
+
+        weakButton.textContent =
+            "★ 苦手を外す";
+
+    }
+
+    else {
+
+        weakButton.textContent =
+            "☆ 苦手にする";
+
+    }
+
+}
+
+
+/* =========================================================
+   カウント表示
+========================================================= */
+
+function updateCount() {
+
+    const weakCount =
+        words.filter(
+            word => word.weak
+        ).length;
+
+
+    countElement.textContent =
+        `全${words.length}語・苦手${weakCount}語`;
+
+}
+
+
+/* =========================================================
+   英語読み上げ
+========================================================= */
+
+function speakEnglish(text) {
+
+    if (!text) {
+        return;
+    }
+
+
+    /*
+     * 前の読み上げを停止
+     */
+
+    speechSynthesis.cancel();
+
+
+    const utterance =
+        new SpeechSynthesisUtterance(
+            text
+        );
+
+
+    utterance.lang =
+        "en-US";
+
+
+    utterance.rate =
+        0.82;
+
+
+    speechSynthesis.speak(
+        utterance
     );
 
-  }
-
-};
+}
 
 
+/* =========================================================
+   読み上げボタン
+========================================================= */
 
-/* =========================
-   全削除
-========================= */
+document
+    .getElementById("speakButton")
+    .onclick = function(event) {
 
-$("clearBtn").onclick = ()=>{
-
-  if(
-    confirm(
-      "保存した単語を全部削除しますか？"
-    )
-  ){
-
-    localStorage.removeItem(
-      savedKey
-    );
+        event.stopPropagation();
 
 
-    pairs=[];
+        if (currentWord) {
+
+            speakEnglish(
+                currentWord.en
+            );
+
+        }
+
+    };
 
 
-    $("studySection")
-      .classList
-      .add("hidden");
+/* =========================================================
+   単語一覧
+========================================================= */
+
+function renderWordList() {
+
+    const list =
+        document.getElementById(
+            "wordList"
+        );
 
 
-    $("listSection")
-      .classList
-      .add("hidden");
+    list.innerHTML = "";
 
 
-    $("editSection")
-      .classList
-      .add("hidden");
+    words.forEach(word => {
 
-  }
-
-};
-
+        const row =
+            document.createElement(
+                "div"
+            );
 
 
-/* =========================
-   起動
-========================= */
+        row.className =
+            "word-row";
 
-loadSaved();
+
+        row.innerHTML = `
+
+            <div class="word-number">
+                ${escapeHTML(word.number)}
+            </div>
+
+            <div>
+                ${escapeHTML(word.jp)}
+            </div>
+
+            <div>
+                ${escapeHTML(word.en)}
+            </div>
+
+            <div>
+                ${word.weak ? "⭐" : ""}
+            </div>
+
+        `;
+
+
+        list.appendChild(row);
+
+    });
+
+}
+
+
+/* =========================================================
+   HTMLエスケープ
+========================================================= */
+
+function escapeHTML(text) {
+
+    return String(text)
+        .replace(
+            /&/g,
+            "&amp;"
+        )
+        .replace(
+            /</g,
+            "&lt;"
+        )
+        .replace(
+            />/g,
+            "&gt;"
+        )
+        .replace(
+            /"/g,
+            "&quot;"
+        )
+        .replace(
+            /'/g,
+            "&#039;"
+        );
+
+}
+
+
+/* =========================================================
+   アプリ起動
+========================================================= */
+
+loadCSV();
 
 </script>
 
