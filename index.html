@@ -343,7 +343,7 @@ function reveal() {
     $("answer").textContent = state.mode === "en" ? state.current.jp : state.current.en;
     $("hint").textContent = "もう一度タップで次の問題";
     state.revealed = true;
-    if (state.mode === "en") speak();
+    speak();
   } else {
     nextQuestion();
   }
