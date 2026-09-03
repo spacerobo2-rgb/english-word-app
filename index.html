@@ -1,1474 +1,413 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-<title>英単語暗記</title>
-
-<style>
-
-* {
-    box-sizing: border-box;
-}
-
-body {
-    margin: 0;
-    font-family:
-        -apple-system,
-        BlinkMacSystemFont,
-        "Hiragino Sans",
-        "Yu Gothic",
-        sans-serif;
-
-    background: #f4f6fa;
-    color: #222;
-}
-
-/* =========================
-   ヘッダー
-========================= */
-
-header {
-    background: white;
-    padding: 18px;
-    text-align: center;
-    border-bottom: 1px solid #ddd;
-}
-
-header h1 {
-    margin: 0;
-    font-size: 22px;
-}
-
-header p {
-    margin: 6px 0 0;
-    color: #777;
-    font-size: 13px;
-}
-
-
-/* =========================
-   全体
-========================= */
-
-.container {
-    max-width: 700px;
-    margin: auto;
-    padding: 15px;
-}
-
-
-/* =========================
-   カード
-========================= */
-
-.box {
-    background: white;
-    border-radius: 16px;
-    padding: 18px;
-    margin-bottom: 15px;
-
-    box-shadow:
-        0 2px 8px rgba(0,0,0,0.06);
-}
-
-.box h2 {
-    font-size: 17px;
-    margin-top: 0;
-}
-
-
-/* =========================
-   ボタン
-========================= */
-
-button {
-    border: none;
-    border-radius: 10px;
-
-    padding: 11px 15px;
-
-    font-size: 14px;
-    font-weight: bold;
-
-    cursor: pointer;
-
-    background: #3478f6;
-    color: white;
-}
-
-button:hover {
-    opacity: 0.85;
-}
-
-button.gray {
-    background: #e9edf3;
-    color: #333;
-}
-
-button.red {
-    background: #ffe5e5;
-    color: #c62828;
-}
-
-button.active {
-    background: #172033;
-}
-
-
-/* =========================
-   ボタン横並び
-========================= */
-
-.buttons {
-    display: flex;
-    gap: 8px;
-    flex-wrap: wrap;
-}
-
-
-/* =========================
-   読み込み状態
-========================= */
-
-.status {
-    margin-top: 10px;
-
-    font-size: 13px;
-
-    color: #666;
-
-    min-height: 20px;
-}
-
-
-/* =========================
-   単語カード
-========================= */
-
-.word-card {
-
-    min-height: 300px;
-
-    border: 2px solid #e3e7ee;
-
-    border-radius: 18px;
-
-    display: flex;
-
-    justify-content: center;
-
-    align-items: center;
-
-    text-align: center;
-
-    cursor: pointer;
-
-    padding: 25px;
-
-    user-select: none;
-}
-
-.question {
-
-    font-size: 32px;
-
-    font-weight: bold;
-
-    line-height: 1.4;
-
-    word-break: break-word;
-}
-
-.answer {
-
-    margin-top: 20px;
-
-    font-size: 27px;
-
-    font-weight: bold;
-
-    color: #3478f6;
-}
-
-.hint {
-
-    margin-top: 25px;
-
-    color: #888;
-
-    font-size: 12px;
-}
-
-
-/* =========================
-   モード
-========================= */
-
-.mode-buttons {
-
-    display: grid;
-
-    grid-template-columns: 1fr 1fr;
-
-    gap: 8px;
-
-    margin-bottom: 10px;
-}
-
-
-/* =========================
-   苦手表示
-========================= */
-
-.badge {
-
-    display: inline-block;
-
-    background: #fff1c7;
-
-    color: #765700;
-
-    padding: 5px 9px;
-
-    border-radius: 20px;
-
-    font-size: 12px;
-
-    margin-left: 5px;
-}
-
-
-/* =========================
-   単語一覧
-========================= */
-
-.word-list {
-
-    max-height: 400px;
-
-    overflow-y: auto;
-
-    border-top: 1px solid #eee;
-}
-
-.word-row {
-
-    display: grid;
-
-    grid-template-columns:
-        45px
-        1fr
-        1fr
-        45px;
-
-    gap: 8px;
-
-    align-items: center;
-
-    padding: 9px 0;
-
-    border-bottom: 1px solid #eee;
-
-    font-size: 14px;
-}
-
-.word-number {
-
-    color: #888;
-
-    font-size: 12px;
-}
-
-
-/* =========================
-   非表示
-========================= */
-
-.hidden {
-    display: none !important;
-}
-
-
-/* =========================
-   注意書き
-========================= */
-
-.info {
-
-    background: #eef6ff;
-
-    border: 1px solid #cfe1ff;
-
-    border-radius: 10px;
-
-    padding: 11px;
-
-    font-size: 13px;
-
-    line-height: 1.6;
-}
-
-</style>
-
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="theme-color" content="#0a0f1c">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="LexiQ">
+  <title>LexiQ</title>
+  <link rel="icon" type="image/png" href="icon.png">
+  <link rel="apple-touch-icon" href="icon.png">
+  <link rel="manifest" href="manifest.json">
+
+  <style>
+    * { box-sizing: border-box; }
+    :root {
+      --bg: #070b14;
+      --panel: #101827;
+      --panel2: #151f31;
+      --text: #f5f8ff;
+      --muted: #aab6ca;
+      --blue: #20d9ff;
+      --blue2: #3777ff;
+      --danger: #ff6b8a;
+      --line: rgba(255,255,255,.10);
+    }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background:
+        radial-gradient(circle at 50% 0%, rgba(39,104,255,.22), transparent 35%),
+        linear-gradient(180deg, #080d18 0%, #050810 100%);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans JP", sans-serif;
+    }
+    button { font: inherit; }
+    .wrap {
+      width: min(760px, 100%);
+      margin: 0 auto;
+      padding: 18px 14px 36px;
+    }
+    header {
+      text-align: center;
+      padding: 8px 0 18px;
+    }
+    .brand {
+      font-size: clamp(38px, 10vw, 64px);
+      font-weight: 800;
+      letter-spacing: -2px;
+      background: linear-gradient(90deg, #fff 45%, #23dfff 70%, #3977ff);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+    }
+    .tagline { color: var(--muted); margin-top: 2px; font-size: 14px; }
+    .panel {
+      background: rgba(16,24,39,.88);
+      border: 1px solid var(--line);
+      border-radius: 22px;
+      padding: 16px;
+      box-shadow: 0 18px 50px rgba(0,0,0,.28);
+      backdrop-filter: blur(10px);
+      margin-bottom: 14px;
+    }
+    .controls {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+    .btn {
+      border: 1px solid var(--line);
+      background: var(--panel2);
+      color: var(--text);
+      border-radius: 14px;
+      padding: 13px 10px;
+      cursor: pointer;
+      transition: transform .08s, border-color .15s, background .15s;
+    }
+    .btn:active { transform: scale(.98); }
+    .btn.active {
+      border-color: rgba(32,217,255,.7);
+      background: linear-gradient(135deg, rgba(32,217,255,.18), rgba(55,119,255,.15));
+    }
+    .btn.primary {
+      background: linear-gradient(135deg, #159cc8, #315de8);
+      border: none;
+      font-weight: 700;
+    }
+    .study-card {
+      min-height: 360px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      cursor: pointer;
+      user-select: none;
+    }
+    .counter { color: var(--muted); font-size: 13px; margin-bottom: 22px; }
+    .word {
+      font-size: clamp(38px, 11vw, 70px);
+      font-weight: 800;
+      letter-spacing: .5px;
+      line-height: 1.12;
+      word-break: break-word;
+    }
+    .answer {
+      margin-top: 24px;
+      font-size: clamp(25px, 7vw, 42px);
+      font-weight: 700;
+      color: #dce8ff;
+      min-height: 48px;
+    }
+    .hint {
+      margin-top: 20px;
+      color: var(--muted);
+      font-size: 13px;
+    }
+    .actions {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 9px;
+      margin-top: 12px;
+    }
+    .small { font-size: 13px; padding: 11px 8px; }
+    .weak { color: #ffd4dd; }
+    .weak.checked {
+      background: rgba(255,107,138,.18);
+      border-color: rgba(255,107,138,.65);
+    }
+    .status {
+      text-align: center;
+      color: var(--muted);
+      font-size: 13px;
+      min-height: 20px;
+      margin-top: 8px;
+    }
+    .list {
+      max-height: 340px;
+      overflow: auto;
+      margin-top: 10px;
+    }
+    .row {
+      display: grid;
+      grid-template-columns: 42px 1fr auto;
+      gap: 8px;
+      align-items: center;
+      padding: 10px 4px;
+      border-bottom: 1px solid var(--line);
+      font-size: 14px;
+    }
+    .num { color: var(--muted); }
+    .en { font-weight: 700; }
+    .jp { color: var(--muted); text-align: right; }
+    .error {
+      color: #ffd5dc;
+      background: rgba(255,80,110,.12);
+      border: 1px solid rgba(255,80,110,.25);
+      padding: 12px;
+      border-radius: 12px;
+      line-height: 1.5;
+      display: none;
+    }
+    .footer-note {
+      text-align:center; color:#71809a; font-size:12px; margin-top:14px;
+    }
+    @media (max-width: 430px) {
+      .study-card { min-height: 330px; }
+      .actions { grid-template-columns: 1fr 1fr; }
+      .actions .next { grid-column: span 2; }
+    }
+  </style>
 </head>
 
-
 <body>
+<div class="wrap">
+  <header>
+    <div class="brand">LexiQ</div>
+    <div class="tagline">つながる、覚える、得点になる。</div>
+  </header>
 
+  <div class="panel">
+    <div class="controls">
+      <button id="modeEn" class="btn active">英語 → 日本語</button>
+      <button id="modeJp" class="btn">日本語 → 英語</button>
+      <button id="allBtn" class="btn active">全部から出題</button>
+      <button id="weakBtn" class="btn">苦手だけ</button>
+    </div>
+  </div>
 
-<header>
+  <div id="error" class="error"></div>
 
-    <h1>📚 英単語暗記</h1>
-
-    <p>
-        CSVの単語データを読み込んで学習します
-    </p>
-
-</header>
-
-
-
-<div class="container">
-
-
-<!-- =========================
-     データ読み込み
-========================= -->
-
-<section class="box">
-
-    <h2>📂 単語データ</h2>
-
-    <div class="info">
-
-        このアプリは、同じフォルダにある
-        <strong>words.csv</strong>
-        を自動的に読み込みます。
-
+  <div class="panel">
+    <div id="card" class="study-card">
+      <div id="counter" class="counter">読み込み中…</div>
+      <div id="word" class="word">LexiQ</div>
+      <div id="answer" class="answer"></div>
+      <div id="hint" class="hint">タップして答えを見る</div>
     </div>
 
-    <div
-        id="status"
-        class="status"
-    >
-        単語データを読み込んでいます…
+    <div class="actions">
+      <button id="speak" class="btn small">🔊 読み上げ</button>
+      <button id="weak" class="btn small weak">☆ 苦手にする</button>
+      <button id="next" class="btn primary next">次の問題 →</button>
     </div>
+    <div id="status" class="status"></div>
+  </div>
 
-</section>
+  <div class="panel">
+    <button id="listToggle" class="btn" style="width:100%">📚 単語一覧を表示</button>
+    <div id="list" class="list" hidden></div>
+  </div>
 
-
-
-<!-- =========================
-     暗記モード
-========================= -->
-
-<section
-    id="studyBox"
-    class="box hidden"
->
-
-    <h2>🧠 暗記モード</h2>
-
-
-    <!-- 日本語→英語 / 英語→日本語 -->
-
-    <div class="mode-buttons">
-
-        <button
-            id="jpToEn"
-            class="active"
-        >
-            日本語 → 英語
-        </button>
-
-
-        <button
-            id="enToJp"
-            class="gray"
-        >
-            英語 → 日本語
-        </button>
-
-    </div>
-
-
-    <!-- 出題範囲 -->
-
-    <div class="buttons">
-
-        <button
-            id="allMode"
-            class="gray"
-        >
-            全部から出題
-        </button>
-
-
-        <button
-            id="weakMode"
-            class="gray"
-        >
-            苦手だけ
-        </button>
-
-
-        <span
-            id="count"
-            class="badge"
-        >
-            0語
-        </span>
-
-    </div>
-
-
-    <div style="height:12px"></div>
-
-
-    <!-- 単語カード -->
-
-    <div
-        id="wordCard"
-        class="word-card"
-    >
-
-        <div>
-
-            <div
-                id="question"
-                class="question"
-            >
-                準備中…
-            </div>
-
-
-            <div
-                id="answer"
-                class="answer hidden"
-            >
-            </div>
-
-
-            <div class="hint">
-
-                タップすると答えが表示されます<br>
-
-                もう一度タップすると次の問題です
-
-            </div>
-
-        </div>
-
-    </div>
-
-
-    <div style="height:10px"></div>
-
-
-    <!-- カード操作 -->
-
-    <div class="buttons">
-
-        <button
-            id="weakButton"
-            class="gray"
-        >
-            ☆ 苦手にする
-        </button>
-
-
-        <button
-            id="speakButton"
-            class="gray"
-        >
-            🔊 英語を読む
-        </button>
-
-    </div>
-
-</section>
-
-
-
-<!-- =========================
-     単語一覧
-========================= -->
-
-<section
-    id="listBox"
-    class="box hidden"
->
-
-    <h2>
-        📖 単語一覧
-    </h2>
-
-
-    <div
-        id="wordList"
-        class="word-list"
-    >
-    </div>
-
-</section>
-
-
-
+  <div class="footer-note">LexiQ · words.csv から単語を読み込みます</div>
 </div>
 
-
-
 <script>
+const state = {
+  words: [],
+  pool: [],
+  current: null,
+  revealed: false,
+  mode: "en",
+  weakOnly: false
+};
 
-/* =========================================================
-   基本設定
-========================================================= */
+const $ = id => document.getElementById(id);
 
-const CSV_FILE = "words.csv";
-
-const STORAGE_KEY =
-    "english_word_weak_words_v1";
-
-
-/* =========================================================
-   データ
-========================================================= */
-
-let words = [];
-
-let currentWord = null;
-
-let showingAnswer = false;
-
-let direction = "jp";
-
-let questionMode = "all";
-
-
-/* =========================================================
-   HTML要素
-========================================================= */
-
-const statusElement =
-    document.getElementById("status");
-
-const studyBox =
-    document.getElementById("studyBox");
-
-const listBox =
-    document.getElementById("listBox");
-
-const wordCard =
-    document.getElementById("wordCard");
-
-const questionElement =
-    document.getElementById("question");
-
-const answerElement =
-    document.getElementById("answer");
-
-const countElement =
-    document.getElementById("count");
-
-const weakButton =
-    document.getElementById("weakButton");
-
-
-/* =========================================================
-   CSVを読み込む
-========================================================= */
-
-async function loadCSV() {
-
-    try {
-
-        statusElement.textContent =
-            "words.csvを読み込んでいます…";
-
-
-        const response =
-            await fetch(CSV_FILE);
-
-
-        if (!response.ok) {
-
-            throw new Error(
-                "words.csvが見つかりません"
-            );
-
-        }
-
-
-        const text =
-            await response.text();
-
-
-        words =
-            parseCSV(text);
-
-
-        if (words.length === 0) {
-
-            throw new Error(
-                "単語データがありません"
-            );
-
-        }
-
-
-        /*
-         * 苦手情報を読み込む
-         */
-
-        loadWeakWords();
-
-
-        statusElement.textContent =
-            `${words.length}語を読み込みました！`;
-
-
-        studyBox
-            .classList
-            .remove("hidden");
-
-
-        listBox
-            .classList
-            .remove("hidden");
-
-
-        updateCount();
-
-        showNextQuestion();
-
-        renderWordList();
-
-
-    } catch (error) {
-
-        console.error(error);
-
-
-        statusElement.innerHTML =
-
-            "❌ 単語データを読み込めませんでした。<br>" +
-
-            "GitHubに <strong>words.csv</strong> が入っているか確認してください。";
-
-    }
-
+function showError(msg) {
+  $("error").style.display = "block";
+  $("error").textContent = msg;
 }
 
-
-/* =========================================================
-   CSV解析
-========================================================= */
+function weakSet() {
+  try {
+    return new Set(JSON.parse(localStorage.getItem("lexiq_weak") || "[]").map(String));
+  } catch {
+    return new Set();
+  }
+}
+function saveWeak(set) {
+  localStorage.setItem("lexiq_weak", JSON.stringify([...set]));
+}
+function isWeak(w) {
+  return weakSet().has(String(w.id));
+}
+function toggleWeak() {
+  if (!state.current) return;
+  const set = weakSet();
+  const id = String(state.current.id);
+  if (set.has(id)) set.delete(id);
+  else set.add(id);
+  saveWeak(set);
+  updateWeakButton();
+  $("status").textContent = set.has(id) ? "苦手に追加しました" : "苦手から外しました";
+}
+function updateWeakButton() {
+  const b = $("weak");
+  if (!state.current) return;
+  if (isWeak(state.current)) {
+    b.textContent = "★ 苦手を外す";
+    b.classList.add("checked");
+  } else {
+    b.textContent = "☆ 苦手にする";
+    b.classList.remove("checked");
+  }
+}
 
 function parseCSV(text) {
-
-    /*
-     * 改行コードを統一
-     */
-
-    text =
-        text.replace(/\r\n/g, "\n")
-            .replace(/\r/g, "\n");
-
-
-    const rows = [];
-
-    let row = [];
-
-    let cell = "";
-
-    let insideQuotes = false;
-
-
-    /*
-     * CSVを1文字ずつ解析
-     *
-     * カンマを含む文章にも対応
-     */
-
-    for (
-        let i = 0;
-        i < text.length;
-        i++
-    ) {
-
-        const char =
-            text[i];
-
-
-        if (char === '"') {
-
-            if (
-                insideQuotes &&
-                text[i + 1] === '"'
-            ) {
-
-                cell += '"';
-
-                i++;
-
-            } else {
-
-                insideQuotes =
-                    !insideQuotes;
-
-            }
-
-        }
-
-        else if (
-            char === "," &&
-            !insideQuotes
-        ) {
-
-            row.push(cell);
-
-            cell = "";
-
-        }
-
-        else if (
-            char === "\n" &&
-            !insideQuotes
-        ) {
-
-            row.push(cell);
-
-            rows.push(row);
-
-            row = [];
-
-            cell = "";
-
-        }
-
-        else {
-
-            cell += char;
-
-        }
-
+  const rows = [];
+  let row = [], cell = "", quoted = false;
+  for (let i = 0; i < text.length; i++) {
+    const c = text[i];
+    if (quoted) {
+      if (c === '"' && text[i + 1] === '"') { cell += '"'; i++; }
+      else if (c === '"') quoted = false;
+      else cell += c;
+    } else {
+      if (c === '"') quoted = true;
+      else if (c === ',') { row.push(cell.trim()); cell = ""; }
+      else if (c === '\n') { row.push(cell.trim()); rows.push(row); row = []; cell = ""; }
+      else if (c !== '\r') cell += c;
     }
-
-
-    /*
-     * 最後の行
-     */
-
-    if (
-        cell !== "" ||
-        row.length > 0
-    ) {
-
-        row.push(cell);
-
-        rows.push(row);
-
-    }
-
-
-    /*
-     * 1行目は見出し
-     */
-
-    const dataRows =
-        rows.slice(1);
-
-
-    const result = [];
-
-
-    for (
-        let i = 0;
-        i < dataRows.length;
-        i++
-    ) {
-
-        const row =
-            dataRows[i];
-
-
-        if (
-            row.length < 3
-        ) {
-
-            continue;
-
-        }
-
-
-        const number =
-            row[0].trim();
-
-
-        const jp =
-            row[1].trim();
-
-
-        const en =
-            row[2].trim();
-
-
-        if (
-            !jp ||
-            !en
-        ) {
-
-            continue;
-
-        }
-
-
-        result.push({
-
-            id:
-                number ||
-                String(i + 1),
-
-            number:
-                number,
-
-            jp:
-                jp,
-
-            en:
-                en,
-
-            weak:
-                false
-
-        });
-
-    }
-
-
-    return result;
-
+  }
+  row.push(cell.trim());
+  if (row.some(x => x !== "")) rows.push(row);
+  return rows;
 }
 
+async function loadCSV() {
+  try {
+    const res = await fetch("words.csv", { cache: "no-store" });
+    if (!res.ok) throw new Error("words.csv が見つかりません");
+    const text = await res.text();
+    const rows = parseCSV(text);
+    if (rows.length < 2) throw new Error("words.csv に単語データがありません");
 
-/* =========================================================
-   苦手データ保存
-========================================================= */
+    state.words = rows.slice(1)
+      .filter(r => r.length >= 3 && r[0] && r[1] && r[2])
+      .map(r => ({ id:r[0], jp:r[1], en:r[2] }));
 
-function loadWeakWords() {
-
-    try {
-
-        const saved =
-            JSON.parse(
-                localStorage.getItem(
-                    STORAGE_KEY
-                ) || "[]"
-            );
-
-
-        words.forEach(word => {
-
-            word.weak =
-                saved.includes(
-                    word.id
-                );
-
-        });
-
-    }
-
-    catch {
-
-        console.log(
-            "苦手データなし"
-        );
-
-    }
-
+    if (!state.words.length) throw new Error("読み込める単語がありません");
+    buildPool();
+    renderList();
+    nextQuestion();
+  } catch (e) {
+    showError("単語データを読み込めませんでした。GitHubに「words.csv」があり、index.html と同じ場所にあるか確認してください。");
+    $("counter").textContent = "読み込みエラー";
+  }
 }
 
-
-/* =========================================================
-   苦手データ保存
-========================================================= */
-
-function saveWeakWords() {
-
-    const weakIds =
-        words
-            .filter(word => word.weak)
-            .map(word => word.id);
-
-
-    localStorage.setItem(
-        STORAGE_KEY,
-        JSON.stringify(
-            weakIds
-        )
-    );
-
+function buildPool() {
+  const source = state.weakOnly ? state.words.filter(isWeak) : state.words;
+  state.pool = [...source];
+  if (!state.pool.length) {
+    $("status").textContent = "苦手単語がありません。まず☆を押して登録してください。";
+  }
 }
 
+function nextQuestion() {
+  if (!state.pool.length) buildPool();
+  if (!state.pool.length) return;
 
-/* =========================================================
-   出題対象
-========================================================= */
+  let candidates = state.pool;
+  if (state.current && candidates.length > 1) {
+    candidates = candidates.filter(w => w.id !== state.current.id);
+  }
+  state.current = candidates[Math.floor(Math.random() * candidates.length)];
+  state.revealed = false;
 
-function getQuestionPool() {
-
-    if (
-        questionMode === "weak"
-    ) {
-
-        const weakWords =
-            words.filter(
-                word => word.weak
-            );
-
-
-        /*
-         * 苦手が0個なら
-         * 全部から出す
-         */
-
-        if (
-            weakWords.length === 0
-        ) {
-
-            alert(
-                "苦手に登録された単語がありません。"
-            );
-
-
-            questionMode = "all";
-
-            return words;
-
-        }
-
-
-        return weakWords;
-
-    }
-
-
-    return words;
-
+  $("word").textContent = state.mode === "en" ? state.current.en : state.current.jp;
+  $("answer").textContent = "";
+  $("hint").textContent = "タップして答えを見る";
+  $("counter").textContent = `${state.pool.length}問中 · No.${state.current.id}`;
+  $("status").textContent = "";
+  updateWeakButton();
 }
 
-
-/* =========================================================
-   次の問題
-========================================================= */
-
-function showNextQuestion() {
-
-    const pool =
-        getQuestionPool();
-
-
-    if (
-        pool.length === 0
-    ) {
-
-        questionElement.textContent =
-            "単語がありません";
-
-        return;
-
-    }
-
-
-    /*
-     * ランダム
-     */
-
-    const index =
-        Math.floor(
-            Math.random() *
-            pool.length
-        );
-
-
-    currentWord =
-        pool[index];
-
-
-    showingAnswer =
-        false;
-
-
-    answerElement
-        .classList
-        .add("hidden");
-
-
-    /*
-     * 日本語→英語
-     */
-
-    if (
-        direction === "jp"
-    ) {
-
-        questionElement.textContent =
-            currentWord.jp;
-
-    }
-
-
-    /*
-     * 英語→日本語
-     */
-
-    else {
-
-        questionElement.textContent =
-            currentWord.en;
-
-
-        /*
-         * 英語を表示した瞬間に読み上げ
-         */
-
-        speakEnglish(
-            currentWord.en
-        );
-
-    }
-
-
-    updateWeakButton();
-
+function reveal() {
+  if (!state.current) return;
+  if (!state.revealed) {
+    $("answer").textContent = state.mode === "en" ? state.current.jp : state.current.en;
+    $("hint").textContent = "もう一度タップで次の問題";
+    state.revealed = true;
+    if (state.mode === "en") speak();
+  } else {
+    nextQuestion();
+  }
 }
 
-
-/* =========================================================
-   答えを表示
-========================================================= */
-
-function showAnswer() {
-
-    if (!currentWord) {
-        return;
-    }
-
-
-    if (
-        showingAnswer === false
-    ) {
-
-        showingAnswer = true;
-
-
-        if (
-            direction === "jp"
-        ) {
-
-            answerElement.textContent =
-                currentWord.en;
-
-
-            speakEnglish(
-                currentWord.en
-            );
-
-        }
-
-        else {
-
-            answerElement.textContent =
-                currentWord.jp;
-
-        }
-
-
-        answerElement
-            .classList
-            .remove("hidden");
-
-    }
-
-    else {
-
-        showNextQuestion();
-
-    }
-
+function speak() {
+  if (!state.current) return;
+  const text = state.current.en;
+  if (!("speechSynthesis" in window)) {
+    $("status").textContent = "このブラウザは読み上げに対応していません";
+    return;
+  }
+  speechSynthesis.cancel();
+  const u = new SpeechSynthesisUtterance(text);
+  u.lang = "en-US";
+  u.rate = 0.82;
+  speechSynthesis.speak(u);
 }
 
-
-/* =========================================================
-   カードタップ
-========================================================= */
-
-wordCard.onclick =
-    showAnswer;
-
-
-/* =========================================================
-   日本語→英語
-========================================================= */
-
-document
-    .getElementById("jpToEn")
-    .onclick = function() {
-
-        direction = "jp";
-
-
-        this.classList
-            .add("active");
-
-        this.classList
-            .remove("gray");
-
-
-        const other =
-            document
-                .getElementById(
-                    "enToJp"
-                );
-
-
-        other.classList
-            .remove("active");
-
-        other.classList
-            .add("gray");
-
-
-        showNextQuestion();
-
-    };
-
-
-/* =========================================================
-   英語→日本語
-========================================================= */
-
-document
-    .getElementById("enToJp")
-    .onclick = function() {
-
-        direction = "en";
-
-
-        this.classList
-            .add("active");
-
-        this.classList
-            .remove("gray");
-
-
-        const other =
-            document
-                .getElementById(
-                    "jpToEn"
-                );
-
-
-        other.classList
-            .remove("active");
-
-        other.classList
-            .add("gray");
-
-
-        showNextQuestion();
-
-    };
-
-
-/* =========================================================
-   全部から出題
-========================================================= */
-
-document
-    .getElementById("allMode")
-    .onclick = function() {
-
-        questionMode = "all";
-
-        this.classList
-            .add("active");
-
-
-        document
-            .getElementById(
-                "weakMode"
-            )
-            .classList
-            .remove("active");
-
-
-        showNextQuestion();
-
-    };
-
-
-/* =========================================================
-   苦手だけ
-========================================================= */
-
-document
-    .getElementById("weakMode")
-    .onclick = function() {
-
-        questionMode = "weak";
-
-        this.classList
-            .add("active");
-
-
-        document
-            .getElementById(
-                "allMode"
-            )
-            .classList
-            .remove("active");
-
-
-        showNextQuestion();
-
-    };
-
-
-/* =========================================================
-   苦手ボタン
-========================================================= */
-
-weakButton.onclick =
-    function(event) {
-
-        event.stopPropagation();
-
-
-        if (!currentWord) {
-            return;
-        }
-
-
-        currentWord.weak =
-            !currentWord.weak;
-
-
-        saveWeakWords();
-
-        updateWeakButton();
-
-        updateCount();
-
-        renderWordList();
-
-    };
-
-
-/* =========================================================
-   苦手ボタン表示
-========================================================= */
-
-function updateWeakButton() {
-
-    if (!currentWord) {
-        return;
-    }
-
-
-    if (
-        currentWord.weak
-    ) {
-
-        weakButton.textContent =
-            "★ 苦手を外す";
-
-    }
-
-    else {
-
-        weakButton.textContent =
-            "☆ 苦手にする";
-
-    }
-
+function setMode(mode) {
+  state.mode = mode;
+  $("modeEn").classList.toggle("active", mode === "en");
+  $("modeJp").classList.toggle("active", mode === "jp");
+  nextQuestion();
 }
 
-
-/* =========================================================
-   カウント表示
-========================================================= */
-
-function updateCount() {
-
-    const weakCount =
-        words.filter(
-            word => word.weak
-        ).length;
-
-
-    countElement.textContent =
-        `全${words.length}語・苦手${weakCount}語`;
-
+function setWeakOnly(on) {
+  state.weakOnly = on;
+  $("weakBtn").classList.toggle("active", on);
+  $("allBtn").classList.toggle("active", !on);
+  buildPool();
+  nextQuestion();
 }
 
-
-/* =========================================================
-   英語読み上げ
-========================================================= */
-
-function speakEnglish(text) {
-
-    if (!text) {
-        return;
-    }
-
-
-    /*
-     * 前の読み上げを停止
-     */
-
-    speechSynthesis.cancel();
-
-
-    const utterance =
-        new SpeechSynthesisUtterance(
-            text
-        );
-
-
-    utterance.lang =
-        "en-US";
-
-
-    utterance.rate =
-        0.82;
-
-
-    speechSynthesis.speak(
-        utterance
-    );
-
+function renderList() {
+  $("list").innerHTML = state.words.map(w =>
+    `<div class="row">
+      <div class="num">${escapeHtml(w.id)}</div>
+      <div class="en">${escapeHtml(w.en)}${isWeak(w) ? " ★" : ""}</div>
+      <div class="jp">${escapeHtml(w.jp)}</div>
+    </div>`
+  ).join("");
+}
+function escapeHtml(s) {
+  return String(s).replace(/[&<>"']/g, c => ({
+    "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"
+  }[c]));
 }
 
-
-/* =========================================================
-   読み上げボタン
-========================================================= */
-
-document
-    .getElementById("speakButton")
-    .onclick = function(event) {
-
-        event.stopPropagation();
-
-
-        if (currentWord) {
-
-            speakEnglish(
-                currentWord.en
-            );
-
-        }
-
-    };
-
-
-/* =========================================================
-   単語一覧
-========================================================= */
-
-function renderWordList() {
-
-    const list =
-        document.getElementById(
-            "wordList"
-        );
-
-
-    list.innerHTML = "";
-
-
-    words.forEach(word => {
-
-        const row =
-            document.createElement(
-                "div"
-            );
-
-
-        row.className =
-            "word-row";
-
-
-        row.innerHTML = `
-
-            <div class="word-number">
-                ${escapeHTML(word.number)}
-            </div>
-
-            <div>
-                ${escapeHTML(word.jp)}
-            </div>
-
-            <div>
-                ${escapeHTML(word.en)}
-            </div>
-
-            <div>
-                ${word.weak ? "⭐" : ""}
-            </div>
-
-        `;
-
-
-        list.appendChild(row);
-
-    });
-
-}
-
-
-/* =========================================================
-   HTMLエスケープ
-========================================================= */
-
-function escapeHTML(text) {
-
-    return String(text)
-        .replace(
-            /&/g,
-            "&amp;"
-        )
-        .replace(
-            /</g,
-            "&lt;"
-        )
-        .replace(
-            />/g,
-            "&gt;"
-        )
-        .replace(
-            /"/g,
-            "&quot;"
-        )
-        .replace(
-            /'/g,
-            "&#039;"
-        );
-
-}
-
-
-/* =========================================================
-   アプリ起動
-========================================================= */
+$("card").addEventListener("click", reveal);
+$("next").addEventListener("click", nextQuestion);
+$("speak").addEventListener("click", speak);
+$("weak").addEventListener("click", toggleWeak);
+$("modeEn").addEventListener("click", () => setMode("en"));
+$("modeJp").addEventListener("click", () => setMode("jp"));
+$("allBtn").addEventListener("click", () => setWeakOnly(false));
+$("weakBtn").addEventListener("click", () => setWeakOnly(true));
+$("listToggle").addEventListener("click", () => {
+  const hidden = $("list").hidden;
+  $("list").hidden = !hidden;
+  $("listToggle").textContent = hidden ? "📚 単語一覧を隠す" : "📚 単語一覧を表示";
+});
 
 loadCSV();
-
 </script>
-
 </body>
 </html>
